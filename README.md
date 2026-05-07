@@ -19,7 +19,7 @@ The core of the system is a sophisticated script that calculates revenue on a de
 ## 🏗️ Data Architecture & Relational Schema
 To ensure data integrity and query efficiency, I implemented a relational schema that joins high-frequency transaction data with agent-specific contractual metadata.
 
-![RevStream-Revenue-Intelligence](Join of Transactions and Agents Tables illustration.pdf)
+![Schema](Join%20of%20Transactions%20and%20Agents%20T.png)
 *Figure 2: Logical Join between 'Transactions' (Fact Table) and 'Agents' (Dimension Table) via Agent_Name.*
 
 **Key Architectural Decisions:**
