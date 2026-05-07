@@ -2,7 +2,7 @@ RevStream | Predictive Revenue Intelligence & Data Warehouse
 RevStream is a high-performance Revenue Operations (RevOps) environment designed to migrate legacy financial ledgers into a cloud-native "Single Source of Truth." By architecting a Star-Schema in Google BigQuery, the system automates complex commission structures, protects corporate margins, and provides executive-level forecasting.
 
 📊 Executive Intelligence
-[View Executive Revenue Dashboard (PDF)](./dashboard.pdf)
+[View Executive Revenue Dashboard (PDF)](./dashboard.png)
 Figure 1: Executive Looker Studio Dashboard visualizing $1.2M+ in net revenue and regional variance analysis.
 
 🚀 Key Technical Pillars
@@ -20,7 +20,7 @@ The core of the system is a sophisticated script that calculates revenue on a de
 ## 🏗️ Data Architecture & Relational Schema
 To ensure data integrity and query efficiency, I implemented a relational schema that joins high-frequency transaction data with agent-specific contractual metadata.
 
-[View Relational Star-Schema Join (PDF)](./schema_join.pdf)
+[View Relational Star-Schema Join (PDF)](./schema_join.png)
 *Figure 2: Logical Join between 'Transactions' (Fact Table) and 'Agents' (Dimension Table) via Agent_Name.*
 
 **Key Architectural Decisions:**
