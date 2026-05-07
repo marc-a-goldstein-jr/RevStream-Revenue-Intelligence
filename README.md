@@ -16,6 +16,17 @@ AI-Validated Prototyping: Utilized Google Gemini for architectural validation, s
 🧬 SQL Logic: The "Split-to-Cap" Engine
 The core of the system is a sophisticated script that calculates revenue on a deal-by-deal basis, identifies when an agent hits their contractual ceiling, and "zeros out" corporate collection once the cap is satisfied.
 
+## 🏗️ Data Architecture & Relational Schema
+To ensure data integrity and query efficiency, I implemented a relational schema that joins high-frequency transaction data with agent-specific contractual metadata.
+
+![Relational Schema Map](assets/joining_of_tables.png)
+*Figure 2: Logical Join between 'Transactions' (Fact Table) and 'Agents' (Dimension Table) via Agent_Name.*
+
+**Key Architectural Decisions:**
+* **Normalization:** Separated agent-specific attributes (Splits, Caps) into a dedicated dimension table to reduce redundancy.
+* **Typing:** Enforced strict data typing (Dates, Integers, Floats) within BigQuery to ensure mathematical accuracy in revenue calculations.
+* **Scalability:** The star-schema design allows for seamless integration of additional dimension tables (e.g., Marketing Spend, Lead Sources) without disrupting the core Fact table.
+
 SQL
 SELECT 
     Agent_Name,
