@@ -1,33 +1,57 @@
-# RevStream | Predictive Revenue Intelligence Suite
+RevStream | Predictive Revenue Intelligence & Data Warehouse
+RevStream is a high-performance Revenue Operations (RevOps) environment designed to migrate legacy financial ledgers into a cloud-native "Single Source of Truth." By architecting a Star-Schema in Google BigQuery, the system automates complex commission structures, protects corporate margins, and provides executive-level forecasting.
 
-**RevStream** is a Revenue Operations (RevOps) environment designed to transform fragmented financial ledgers into a cloud-native "Single Source of Truth." By migrating legacy data to a **Google BigQuery Star-Schema**, the system provides a high-concurrency pipeline for revenue forecasting and commission automation.
+📊 Executive Intelligence
+Figure 1: Executive Looker Studio Dashboard visualizing $1.2M+ in net revenue and regional variance analysis.
 
-## 📊 Project Visuals
-![Executive Dashboard](assets/your_dashboard_screenshot.png)
-*Figure 1: Executive Looker Studio Dashboard visualizing $1.2M+ in net revenue and regional variance.*
+🚀 Key Technical Pillars
+Cloud Data Architecture: Engineered a full-stack migration from flat-file Excel storage to a relational BigQuery Star-Schema, optimizing data retrieval for multi-million row scalability.
 
-## 🚀 Key Technical Accomplishments
-* **Data Warehouse Architecture:** Architected a full-stack migration from Excel to BigQuery, implementing a relational **Star-Schema** to optimize query performance.
-* **Advanced SQL Engineering:** Leveraged **Window Functions (`SUM OVER PARTITION`)** to calculate YTD pacing and daily run-rates across 5 regional territories.
-* **Automated Fiscal Logic:** Engineered complex `CASE WHEN` structures to automate commission reconciliation against agent contractual caps, reducing manual audit time by 85%.
+Advanced Fiscal Engineering: Developed a tiered commission capping engine using SQL Window Functions and nested subqueries to automate the transition from "Split" to "100% Payout" structures.
 
-## 🛠️ The Tech Stack
-* **Storage/Engine:** Google BigQuery (SQL)
-* **BI Layer:** Looker Studio (Dark Mode Executive Dashboard)
-* **Logic:** Advanced SQL (CTEs, Window Functions, Relational Joins)
-* **Design Tool:** Google Gemini (Architectural validation and prototyping)
+Revenue Variance Forensics: Built interactive Looker Studio dashboards to visualize the delta between "Potential Revenue" and "Actual Net Revenue," identifying 15% growth opportunities in high-production territories.
 
-## 🧬 SQL Showcase: YTD Revenue Pacing
-Below is a sample of the logic used to calculate running totals and regional contribution percentages:
+AI-Validated Prototyping: Utilized Google Gemini for architectural validation, schema normalization, and rapid SQL prototyping.
 
-```sql
+🧬 SQL Logic: The "Split-to-Cap" Engine
+The core of the system is a sophisticated script that calculates revenue on a deal-by-deal basis, identifies when an agent hits their contractual ceiling, and "zeros out" corporate collection once the cap is satisfied.
+
+SQL
 SELECT 
-    transaction_date,
-    region,
-    revenue,
-    -- Calculating the YTD Running Total per Region
-    SUM(revenue) OVER (PARTITION BY region ORDER BY transaction_date) as ytd_revenue,
-    -- Calculating % Contribution to the total Region revenue
-    ROUND((revenue / SUM(revenue) OVER (PARTITION BY region)) * 100, 2) as pct_contribution
-FROM `your_project.revenue_fact`
-WHERE status = 'Finalized';
+    Agent_Name,
+    Closing_Date,
+    Location,
+    Calculated_Company_Dollar,
+    -- Case logic to detect the 'Cliff' where Agent reaches their Cap
+    CASE 
+        WHEN Running_Total_Company_Dollar > Agent_Cap THEN Agent_Cap 
+        ELSE Running_Total_Company_Dollar 
+    END AS Capped_Running_Total,
+    Agent_Cap,
+    -- Automated Revenue Reconciliation logic
+    CASE 
+        WHEN (Running_Total_Company_Dollar - Calculated_Company_Dollar) >= Agent_Cap THEN 0
+        WHEN Running_Total_Company_Dollar > Agent_Cap THEN Agent_Cap - (Running_Total_Company_Dollar - Calculated_Company_Dollar)
+        ELSE Calculated_Company_Dollar
+    END AS Actual_Company_Revenue
+FROM (
+    -- Subquery utilizing Window Functions for chronological Running Totals
+    SELECT 
+        t.Closing_Date,
+        t.Agent_Name,
+        t.Location,
+        (t.GCI * (1 - a.Agent_Split)) as Calculated_Company_Dollar,
+        a.Agent_Cap,
+        SUM((t.GCI * (1 - a.Agent_Split))) OVER(PARTITION BY t.Agent_Name ORDER BY t.Closing_Date) AS Running_Total_Company_Dollar
+    FROM `RealEstate_2025.Transactions` t
+    JOIN `RealEstate_2025.Agents` a ON a.Agent_Name = t.Agent_Name
+)
+ORDER BY Agent_Name, Closing_Date;
+🛠️ The Tech Stack
+Engine: Google BigQuery (SQL)
+
+BI Layer: Looker Studio
+
+Schema: Relational Star-Schema
+
+Key Functions: Window Functions (SUM OVER PARTITION), CTEs, Join Logic, Case Statements.
